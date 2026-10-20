@@ -1,0 +1,6 @@
+# Нормализация переводов строк / Line ending normalization
+* text=auto
+
+# Скрипты должны сохранять LF (даже на Windows)
+scripts/bash/*.sh text eol=lf
+*.sh text eol=lf

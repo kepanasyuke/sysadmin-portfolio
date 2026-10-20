@@ -1,0 +1,4 @@
+SamAccountName,Name,UPN,OU,Password
+apetrov,Petrov Alexey,apetrov@corp.local,"OU=Users,DC=corp,DC=local",TempPass1!
+isidorov,Sidorov Ivan,isidorov@corp.local,"OU=Users,DC=corp,DC=local",TempPass2!
+ekuznetsova,Kuznetsova Elena,ekuznetsova@corp.local,"OU=Users,DC=corp,DC=local",TempPass3!

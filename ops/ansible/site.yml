@@ -1,0 +1,50 @@
+---
+# site.yml — плейбук: базовая настройка веб-сервера (Nginx + firewall).
+# Usage: ansible-playbook -i inventory.yml site.yml
+- name: Настройка веб-сервера Nginx
+  hosts: webservers
+  become: yes
+  vars:
+    nginx_port: 80
+    firewall_allowed:
+      - { port: 22, proto: tcp, comment: "SSH" }
+      - { port: 80, proto: tcp, comment: "HTTP" }
+      - { port: 443, proto: tcp, comment: "HTTPS" }
+
+  tasks:
+    - name: Обновление кеша пакетов
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Установка Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Включение и запуск Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Разрешение портов в UFW
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+        comment: "{{ item.comment }}"
+      loop: "{{ firewall_allowed }}"
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Создание стартовой страницы
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: |
+          <h1>Node: {{ inventory_hostname }}</h1>
+          <p>Managed by Ansible.</p>
+        mode: "0644"
+
+    - name: Прямой доступ к фактам
+      ansible.builtin.debug:
+        msg: "Узел {{ inventory_hostname }} ОС {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
